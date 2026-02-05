@@ -1,237 +1,144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>관리자 발행량 설정</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background: #f6f7f9; }
-    .wrap { max-width: 520px; margin: 0 auto; padding: 16px; }
-    .card { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 12px; }
-    input, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d7dbe0; font-size: 16px; box-sizing: border-box; }
-    button { border: 0; background: #2f6fff; color: #fff; cursor: pointer; }
-    button:disabled { background: #9fb9ff; cursor: not-allowed; }
-    .row { display: grid; gap: 10px; }
-    .muted { color: #6b7280; font-size: 13px; line-height: 1.4; }
-    .ok { color: #0f7b3a; }
-    .bad { color: #b42318; }
-    .top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 10px; }
-    .tiny { font-size: 12px; color:#6b7280; word-break: break-all; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포스팅 도우미 - AI 자동 발행 솔루션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; }
+        .hero-gradient { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <div>
-          <div>모바일 관리자</div>
-          <div class="tiny" id="sessionInfo">로그인 안됨</div>
+<body class="bg-gray-50 text-gray-900">
+
+    <nav class="fixed w-full z-50 glass border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold text-blue-600">포스팅 도우미</div>
+            <div class="space-x-8 font-medium hidden md:block">
+                <a href="#features" class="hover:text-blue-600 transition">주요기능</a>
+                <a href="#smartpc" class="hover:text-blue-600 transition">스마트PC</a>
+                <a href="#pricing" class="hover:text-blue-600 transition">이용요금</a>
+                <a href="#setup" class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">셋팅 신청하기</a>
+            </div>
         </div>
-        <button id="btnLogout" style="width:auto; padding:10px 12px; display:none;">로그아웃</button>
-      </div>
+    </nav>
 
-      <div class="row" id="loginBox">
-        <input id="email" type="email" placeholder="관리자 이메일" />
-        <input id="password" type="password" placeholder="비밀번호" />
-        <button id="btnLogin">로그인</button>
-        <div class="muted">관리자 계정으로 Supabase Auth에 가입되어 있어야 합니다.</div>
-        <div class="muted" id="loginMsg"></div>
-      </div>
-
-      <div class="row" id="resetBox" style="display:none;">
-        <div class="muted">비밀번호 재설정 링크로 들어왔습니다. 새 비밀번호를 설정하세요.</div>
-        <input id="newPassword" type="password" placeholder="새 비밀번호" />
-        <input id="newPassword2" type="password" placeholder="새 비밀번호 확인" />
-        <button id="btnSetPassword">비밀번호 저장</button>
-        <div class="muted" id="resetMsg"></div>
-      </div>
-    </div>
-
-    <div class="card" id="adminBox" style="display:none;">
-      <div class="row">
-        <input id="targetUserId" placeholder="대상 로그인 아이디 입력 (예: infocs)" />
-        <button id="btnApply30" disabled>발행량 전부 30 + 만료일 30일 연장</button>
-        <div class="muted">
-          적용: daily_limit, tistory_daily_limit, cafe24_daily_limit, total_daily_limit = 30<br>
-          만료일: 기존 expires_at이 남아있으면 거기서 +30일, 없으면 오늘부터 +30일
+    <section class="pt-32 pb-20 px-6 hero-gradient">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+                내 컴퓨터를 꺼도 <span class="text-blue-600">365일 24시간</span><br>AI가 자동으로 포스팅합니다.
+            </h1>
+            <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                네이버 블로그, 카페, 티스토리까지! 한 번의 설정으로 한 달 내내 매일 새로운 키워드로 자동 발행되는 압도적인 효율을 경험하세요.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="#pricing" class="bg-blue-600 text-white px-10 py-4 rounded-xl text-lg font-bold hover:shadow-lg transition">서비스 시작하기</a>
+                <a href="#setup" class="bg-white text-gray-800 px-10 py-4 rounded-xl text-lg font-bold border border-gray-200 hover:bg-gray-50 transition">셋팅 대행 문의</a>
+            </div>
         </div>
-        <div class="muted" id="applyMsg"></div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+    <section id="features" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-16">작업은 AI에게 맡기고, 사장님은 상담에만 집중하세요.</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 text-blue-600 text-2xl">🤖</div>
+                    <h3 class="text-xl font-bold mb-4">AI 자동 발행 시스템</h3>
+                    <p class="text-gray-600 leading-relaxed">AI를 통해 매일 다른 키워드와 내용으로 글을 생성합니다. 유사 문서 걱정 없이 블로그, 카페, 티스토리에 동시 발행됩니다.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6 text-green-600 text-2xl">⏰</div>
+                    <h3 class="text-xl font-bold mb-4">지정 시간 자동 재시작</h3>
+                    <p class="text-gray-600 leading-relaxed">매일 정해진 시간에 프로그램이 자동 재시작되어 누락 없는 포스팅을 보장합니다. 한 달간 멈춤 없이 가동됩니다.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6 text-purple-600 text-2xl">📈</div>
+                    <h3 class="text-xl font-bold mb-4">하루 30건 대량 발행</h3>
+                    <p class="text-gray-600 leading-relaxed">블로그 > 카페 > 티스토리로 이어지는 효율적인 발행 루틴으로 영역별 노출을 극대화합니다. 한 달 약 900건의 포스팅이 생성됩니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    // ✅ 원본(사람이 보기 편하게)
-    const SUPABASE_URL_RAW = "https://kuoeuaueztytmebxjckn.supabase.co";
-    const SUPABASE_ANON_KEY_RAW = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1b2V1YXVlenR5dG1lYnhqY2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4Mjk2MDUsImV4cCI6MjA4MjQwNTYwNX0.J3N3RVUIa93-KNihGYAQnNCasy5L5rw5v5dmGDXtH80";
+    <section id="smartpc" class="py-20 px-6 bg-blue-900 text-white rounded-[3rem] mx-4 my-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-1/2">
+                <span class="bg-blue-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Optional Service</span>
+                <h2 class="text-4xl font-bold mt-4 mb-6 italic">Smart PC (가상 서버)</h2>
+                <ul class="space-y-4 text-blue-100 text-lg">
+                    <li class="flex items-center"><span class="mr-3">✔</span> 내 컴퓨터 전원을 꺼도 포스팅은 계속됩니다.</li>
+                    <li class="flex items-center"><span class="mr-3">✔</span> 한 달간 고정 IP를 할당받아 안전하게 관리됩니다.</li>
+                    <li class="flex items-center"><span class="mr-3">✔</span> 인터넷만 있다면 언제 어디서든 접속하여 모니터링 가능합니다.</li>
+                </ul>
+                <div class="mt-8">
+                    <span class="text-3xl font-bold text-white italic">월 1만원</span> <span class="text-blue-300 ml-2">의 저렴한 비용으로 개인 서버 구축</span>
+                </div>
+            </div>
+            <div class="md:w-1/2 bg-blue-800 p-8 rounded-3xl border border-blue-700 shadow-2xl">
+                <div class="flex gap-2 mb-4">
+                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                </div>
+                <p class="font-mono text-sm text-blue-200">
+                    [System] 스마트PC 할당 완료...<br>
+                    [System] 고정 IP: 121.XXX.XXX.XXX 활성화...<br>
+                    [System] AI 포스팅 엔진 정상 작동 중...<br>
+                    [System] 24/7 무중단 운영 상태입니다.
+                </p>
+            </div>
+        </div>
+    </section>
 
-    // ✅ 보이지 않는 유니코드(Zero-width, BOM 등) 제거 + 공백 정리
-    const clean = (s) =>
-      String(s || "")
-        .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "") // zero-width/BOM 제거
-        .replace(/\s+/g, "")                         // 키는 중간 공백 있으면 안됨
-        .trim();
+    <section id="pricing" class="py-20 px-6">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-12">합리적인 비용으로 강력한 효과를</h2>
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-2 border-blue-600">
+                <div class="p-10">
+                    <h3 class="text-2xl font-bold mb-2">프리미엄 한 달 플랜</h3>
+                    <div class="text-5xl font-extrabold my-6">300,000<span class="text-xl text-gray-500 font-normal">원 / 월</span></div>
+                    <ul class="text-left space-y-4 mb-10 text-gray-600">
+                        <li class="flex items-center italic font-semibold text-blue-600"><span class="mr-2">★</span> 하루 30건, 한 달 900건 자동 발행</li>
+                        <li class="flex items-center"><span class="mr-2 text-blue-600">✔</span> 블로그/카페/티스토리 통합 플랫폼</li>
+                        <li class="flex items-center"><span class="mr-2 text-blue-600">✔</span> 매일 다른 키워드 및 사진 자동 매칭</li>
+                        <li class="flex items-center"><span class="mr-2 text-blue-600">✔</span> 스마트PC 옵션 추가 가능 (+1만원)</li>
+                    </ul>
+                    <a href="#" class="block w-full bg-blue-600 text-white py-4 rounded-xl text-xl font-bold hover:bg-blue-700 transition">결제 및 이용 문의</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    const SUPABASE_URL = clean(SUPABASE_URL_RAW);
-    const SUPABASE_ANON_KEY = clean(SUPABASE_ANON_KEY_RAW);
+    <section id="setup" class="py-20 px-6 bg-gray-100">
+        <div class="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-sm border border-gray-200 flex flex-col md:flex-row items-center gap-10">
+            <div class="md:w-1/2">
+                <h2 class="text-3xl font-bold mb-4 italic">셋팅 대행 서비스 🚀</h2>
+                <p class="text-gray-600 leading-relaxed mb-6 italic">
+                    프로그램 설정이 막막하신가요? 걱정 마세요. <br>
+                    업체명, 키워드, 사진만 주시면 <strong>푸르메정원, 오케이독</strong>처럼 전문적인 포스팅이 되도록 기초 셋팅을 완벽하게 대행해 드립니다.
+                </p>
+                <div class="text-sm text-blue-600 font-bold">기본 정보만 전달 시 즉시 실행 가능</div>
+            </div>
+            <div class="md:w-1/2 w-full">
+                <div class="bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-300">
+                    <p class="text-center text-gray-500 font-medium">셋팅 신청 프로세스</p>
+                    <div class="mt-4 space-y-2">
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-sm">1. 업체 정보 및 사진 전달</div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-sm">2. 키워드 및 노출 영역 협의</div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-sm text-blue-600 font-bold">3. 셋팅 완료 및 자동 발행 시작!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    // 디버그: 길이만 확인(키 내용은 출력하지 않음)
-    console.log("ANON_KEY length:", SUPABASE_ANON_KEY.length);
+    <footer class="py-10 text-center text-gray-400 text-sm border-t border-gray-200">
+        <p>© 2026 포스팅 도우미. All Rights Reserved.</p>
+    </footer>
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        flowType: "pkce",
-      },
-    });
-
-    const el = (id) => document.getElementById(id);
-
-    const sessionInfo = el("sessionInfo");
-    const loginBox = el("loginBox");
-    const resetBox = el("resetBox");
-    const adminBox = el("adminBox");
-    const btnLogout = el("btnLogout");
-
-    const btnLogin = el("btnLogin");
-    const loginMsg = el("loginMsg");
-
-    const btnSetPassword = el("btnSetPassword");
-    const resetMsg = el("resetMsg");
-
-    const targetUserId = el("targetUserId");
-    const btnApply30 = el("btnApply30");
-    const applyMsg = el("applyMsg");
-
-    function setMsg(node, text, type) {
-      node.textContent = text || "";
-      node.className = "muted " + (type || "");
-    }
-
-    function isRecoveryLink() {
-      const h = window.location.hash || "";
-      const q = window.location.search || "";
-      return h.includes("type=recovery") || q.includes("type=recovery");
-    }
-
-    async function acceptSessionFromUrlIfAny() {
-      try {
-        await supabase.auth.getSessionFromUrl({ storeSession: true });
-      } catch (e) {
-        // 여기서 에러가 나도 로그인 자체를 막진 않게 무시
-        console.log("getSessionFromUrl error:", e?.message || e);
-      }
-    }
-
-    async function refreshUI() {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (session) {
-        sessionInfo.textContent = "로그인됨: " + session.user.email;
-        btnLogout.style.display = "inline-block";
-
-        if (isRecoveryLink()) {
-          loginBox.style.display = "none";
-          resetBox.style.display = "grid";
-          adminBox.style.display = "none";
-        } else {
-          loginBox.style.display = "none";
-          resetBox.style.display = "none";
-          adminBox.style.display = "block";
-        }
-
-      } else {
-        sessionInfo.textContent = "로그인 안됨";
-        btnLogout.style.display = "none";
-        loginBox.style.display = "grid";
-        resetBox.style.display = "none";
-        adminBox.style.display = "none";
-      }
-    }
-
-    btnLogin.addEventListener("click", async () => {
-      setMsg(loginMsg, "");
-      btnLogin.disabled = true;
-      try {
-        const email = el("email").value.trim();
-        const password = el("password").value;
-
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-
-        setMsg(loginMsg, "로그인 성공", "ok");
-        await refreshUI();
-      } catch (e) {
-        console.log("LOGIN ERROR FULL:", e);
-        setMsg(loginMsg, "로그인 실패: " + (e?.message || JSON.stringify(e) || e), "bad");
-      } finally {
-        btnLogin.disabled = false;
-      }
-    });
-
-    btnSetPassword.addEventListener("click", async () => {
-      setMsg(resetMsg, "");
-      btnSetPassword.disabled = true;
-      try {
-        const p1 = el("newPassword").value;
-        const p2 = el("newPassword2").value;
-
-        if (!p1 || p1.length < 6) throw new Error("비밀번호는 6자 이상으로 입력하세요.");
-        if (p1 !== p2) throw new Error("비밀번호 확인이 일치하지 않습니다.");
-
-        const { error } = await supabase.auth.updateUser({ password: p1 });
-        if (error) throw error;
-
-        setMsg(resetMsg, "비밀번호 저장 완료. 이제 로그인 화면으로 이동합니다.", "ok");
-
-        history.replaceState({}, document.title, window.location.pathname);
-
-        await supabase.auth.signOut();
-        await refreshUI();
-      } catch (e) {
-        console.log("RESET ERROR FULL:", e);
-        setMsg(resetMsg, "비밀번호 저장 실패: " + (e?.message || JSON.stringify(e) || e), "bad");
-      } finally {
-        btnSetPassword.disabled = false;
-      }
-    });
-
-    btnLogout.addEventListener("click", async () => {
-      await supabase.auth.signOut();
-      await refreshUI();
-    });
-
-    targetUserId.addEventListener("input", () => {
-      btnApply30.disabled = targetUserId.value.trim().length === 0;
-    });
-
-    btnApply30.addEventListener("click", async () => {
-      setMsg(applyMsg, "");
-      btnApply30.disabled = true;
-      try {
-        const loginId = targetUserId.value.trim();
-
-        // RPC는 반드시 DB에 만들어져 있어야 함
-        const { error } = await supabase.rpc("admin_set_limits_30_by_login", { p_target_login: loginId });
-        if (error) throw error;
-
-        setMsg(applyMsg, "적용 완료: " + loginId, "ok");
-      } catch (e) {
-        console.log("APPLY ERROR FULL:", e);
-        setMsg(applyMsg, "적용 실패: " + (e?.message || JSON.stringify(e) || e), "bad");
-      } finally {
-        btnApply30.disabled = false;
-      }
-    });
-
-    supabase.auth.onAuthStateChange(() => refreshUI());
-
-    await acceptSessionFromUrlIfAny();
-    await refreshUI();
-  </script>
 </body>
 </html>
