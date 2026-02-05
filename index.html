@@ -66,70 +66,6 @@
     const SUPABASE_URL = "https://kuoeuaueztytmebxjckn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1b2V1YXVlenR5dG1lYnhqY2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4Mjk2MDUsImV4cCI6MjA4MjQwNTYwNX0.J3N3RVUIa93-KNihGYAQnNCasy5L5rw5v5dmGDXtH80";
 
-    // ✅ 여기부터 추가: headers 라틴1/ASCII 안전 변환 fetch
-    function toLatin1SafeValue(v) {
-      if (v == null) return v;
-      const s = String(v);
-
-      // ISO-8859-1(라틴1) 범위: U+0000 ~ U+00FF
-      // 그 밖 문자가 있으면 URL 인코딩으로 ASCII로 변환
-      for (let i = 0; i < s.length; i++) {
-        if (s.charCodeAt(i) > 255) {
-          return encodeURIComponent(s);
-        }
-      }
-      return s;
-    }
-
-    function normalizeHeaders(initHeaders) {
-      // initHeaders는 Headers | object | [][]
-      if (!initHeaders) return undefined;
-
-      const out = new Headers();
-
-      try {
-        if (initHeaders instanceof Headers) {
-          initHeaders.forEach((value, key) => out.set(key, toLatin1SafeValue(value)));
-          return out;
-        }
-
-        if (Array.isArray(initHeaders)) {
-          for (const pair of initHeaders) {
-            if (!pair || pair.length < 2) continue;
-            const [k, v] = pair;
-            out.set(String(k), toLatin1SafeValue(v));
-          }
-          return out;
-        }
-
-        // plain object
-        for (const [k, v] of Object.entries(initHeaders)) {
-          out.set(String(k), toLatin1SafeValue(v));
-        }
-        return out;
-      } catch {
-        // 혹시라도 이상한 형태면 그냥 그대로 반환
-        return initHeaders;
-      }
-    }
-
-    async function safeFetch(input, init = {}) {
-      const nextInit = { ...init };
-
-      // headers가 문제의 원인이라 여기서 무조건 정리
-      nextInit.headers = normalizeHeaders(init.headers);
-
-      return fetch(input, nextInit);
-    }
-    // ✅ 여기까지 추가 끝
-
-    // ✅ supabase client에 safeFetch 주입 (중요)
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        fetch: safeFetch
-      }
-    });
-
     const el = (id) => document.getElementById(id);
 
     const sessionInfo = el("sessionInfo");
@@ -159,14 +95,70 @@
       return h.includes("type=recovery") || q.includes("type=recovery");
     }
 
+    // ✅ fetch 헤더에서 "라틴1 범위 밖 문자" 제거 (이 에러의 직접 해결)
+    function toLatin1SafeString(v) {
+      if (v == null) return "";
+      const s = String(v);
+      // fetch는 header value가 ByteString(대략 \x00-\xFF)이어야 함
+      return s.replace(/[^\x00-\xFF]/g, "");
+    }
+
+    function sanitizeHeaders(initHeaders) {
+      // initHeaders가 Headers | object | array 인 모든 케이스 처리
+      const h = new Headers();
+
+      try {
+        const src = new Headers(initHeaders || {});
+        for (const [k, v] of src.entries()) {
+          const safeV = toLatin1SafeString(v);
+          h.set(k, safeV);
+
+          // 디버그: 혹시 뭘 잘라냈는지 확인 가능
+          if (safeV !== String(v)) {
+            console.warn("[header sanitized]", k, "before=", v, "after=", safeV);
+          }
+        }
+      } catch (e) {
+        // 혹시 initHeaders가 이상하게 들어오는 경우 대비
+        console.warn("sanitizeHeaders fallback:", e);
+      }
+
+      return h;
+    }
+
+    async function safeFetch(url, options = {}) {
+      const next = { ...options };
+      next.headers = sanitizeHeaders(options.headers);
+
+      // 혹시 URL/옵션에 이상값 있을 때 로그
+      // console.log("safeFetch:", url, next);
+
+      return fetch(url, next);
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+      global: {
+        fetch: safeFetch, // ✅ 여기 핵심
+      },
+    });
+
     async function acceptSessionFromUrlIfAny() {
       try {
+        // recovery/매직링크로 들어왔을 때 세션 저장
         await supabase.auth.getSessionFromUrl({ storeSession: true });
-      } catch (e) {}
+      } catch (e) {
+        // 일부 케이스에서 예외가 날 수 있으니 무시
+      }
     }
 
     async function refreshUI() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) console.warn("getSession error:", error);
 
       if (session) {
         sessionInfo.textContent = "로그인됨: " + session.user.email;
@@ -181,7 +173,6 @@
           resetBox.style.display = "none";
           adminBox.style.display = "block";
         }
-
       } else {
         sessionInfo.textContent = "로그인 안됨";
         btnLogout.style.display = "none";
@@ -194,9 +185,13 @@
     btnLogin.addEventListener("click", async () => {
       setMsg(loginMsg, "");
       btnLogin.disabled = true;
+
       try {
         const email = el("email").value.trim();
-        const password = el("password").value;
+        const password = el("password").value; // 직접 입력값 그대로
+
+        if (!email) throw new Error("이메일을 입력하세요.");
+        if (!password) throw new Error("비밀번호를 입력하세요.");
 
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -214,6 +209,7 @@
     btnSetPassword.addEventListener("click", async () => {
       setMsg(resetMsg, "");
       btnSetPassword.disabled = true;
+
       try {
         const p1 = el("newPassword").value;
         const p2 = el("newPassword2").value;
@@ -226,6 +222,7 @@
 
         setMsg(resetMsg, "비밀번호 저장 완료. 이제 로그인 화면으로 이동합니다.", "ok");
 
+        // URL 토큰 제거
         history.replaceState({}, document.title, window.location.pathname);
 
         await supabase.auth.signOut();
@@ -250,9 +247,9 @@
     btnApply30.addEventListener("click", async () => {
       setMsg(applyMsg, "");
       btnApply30.disabled = true;
+
       try {
         const loginId = targetUserId.value.trim();
-
         const { error } = await supabase.rpc("admin_set_limits_30_by_login", { p_target_login: loginId });
         if (error) throw error;
 
