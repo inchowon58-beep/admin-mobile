@@ -17,8 +17,6 @@
     .bad { color: #b42318; }
     .top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 10px; }
     .tiny { font-size: 12px; color:#6b7280; word-break: break-all; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .hr { height:1px; background:#eef0f3; margin:10px 0; }
   </style>
 </head>
 <body>
@@ -39,23 +37,25 @@
         <div class="muted">관리자 계정으로 Supabase Auth에 가입되어 있어야 합니다.</div>
         <div class="muted" id="loginMsg"></div>
       </div>
+
+      <div class="row" id="resetBox" style="display:none;">
+        <div class="muted">비밀번호 재설정 링크로 들어왔습니다. 새 비밀번호를 설정하세요.</div>
+        <input id="newPassword" type="password" placeholder="새 비밀번호" />
+        <input id="newPassword2" type="password" placeholder="새 비밀번호 확인" />
+        <button id="btnSetPassword">비밀번호 저장</button>
+        <div class="muted" id="resetMsg"></div>
+      </div>
     </div>
 
     <div class="card" id="adminBox" style="display:none;">
       <div class="row">
-        <input id="targetLoginId" placeholder="대상 로그인 아이디 입력 (예: infocs)" />
+        <input id="targetUserId" placeholder="대상 로그인 아이디 입력 (예: infocs)" />
         <button id="btnApply30" disabled>발행량 전부 30 + 만료일 30일 연장</button>
-
         <div class="muted">
-          적용 내용: daily_limit, tistory_daily_limit, cafe24_daily_limit, total_daily_limit = 30<br/>
-          만료일: 남아있으면 기존 expires_at에서 +30일, 만료/없으면 오늘부터 +30일
+          적용: daily_limit, tistory_daily_limit, cafe24_daily_limit, total_daily_limit = 30<br>
+          만료일: 기존 expires_at이 남아있으면 거기서 +30일, 없으면 오늘부터 +30일
         </div>
-
         <div class="muted" id="applyMsg"></div>
-
-        <div class="hr"></div>
-
-        <div class="muted mono" id="resultBox" style="white-space:pre-wrap;"></div>
       </div>
     </div>
   </div>
@@ -67,43 +67,66 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1b2V1YXVlenR5dG1lYnhqY2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4Mjk2MDUsImV4cCI6MjA4MjQwNTYwNX0.J3N3RVUIa93-KNihGYAQnNCasy5L5rw5v5dmGDXtH80";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const el = (id) => document.getElementById(id);
 
     const sessionInfo = el("sessionInfo");
     const loginBox = el("loginBox");
+    const resetBox = el("resetBox");
     const adminBox = el("adminBox");
     const btnLogout = el("btnLogout");
 
     const btnLogin = el("btnLogin");
     const loginMsg = el("loginMsg");
 
-    const targetLoginId = el("targetLoginId");
+    const btnSetPassword = el("btnSetPassword");
+    const resetMsg = el("resetMsg");
+
+    const targetUserId = el("targetUserId");
     const btnApply30 = el("btnApply30");
     const applyMsg = el("applyMsg");
-    const resultBox = el("resultBox");
 
     function setMsg(node, text, type) {
       node.textContent = text || "";
       node.className = "muted " + (type || "");
     }
 
-    function setResult(text) {
-      resultBox.textContent = text || "";
+    function isRecoveryLink() {
+      const h = window.location.hash || "";
+      const q = window.location.search || "";
+      return h.includes("type=recovery") || q.includes("type=recovery");
+    }
+
+    async function acceptSessionFromUrlIfAny() {
+      // 재설정 링크(또는 매직링크)로 들어왔을 때 URL에 세션 토큰이 들어있음
+      try {
+        await supabase.auth.getSessionFromUrl({ storeSession: true });
+      } catch (e) {}
     }
 
     async function refreshUI() {
       const { data: { session } } = await supabase.auth.getSession();
+
       if (session) {
         sessionInfo.textContent = "로그인됨: " + session.user.email;
-        loginBox.style.display = "none";
-        adminBox.style.display = "block";
         btnLogout.style.display = "inline-block";
+
+        // recovery 링크면 비번 설정 화면을 우선 보여줌
+        if (isRecoveryLink()) {
+          loginBox.style.display = "none";
+          resetBox.style.display = "grid";
+          adminBox.style.display = "none";
+        } else {
+          loginBox.style.display = "none";
+          resetBox.style.display = "none";
+          adminBox.style.display = "block";
+        }
+
       } else {
         sessionInfo.textContent = "로그인 안됨";
-        loginBox.style.display = "grid";
-        adminBox.style.display = "none";
         btnLogout.style.display = "none";
+        loginBox.style.display = "grid";
+        resetBox.style.display = "none";
+        adminBox.style.display = "none";
       }
     }
 
@@ -113,15 +136,46 @@
       try {
         const email = el("email").value.trim();
         const password = el("password").value;
+
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+
         setMsg(loginMsg, "로그인 성공", "ok");
         await refreshUI();
       } catch (e) {
         console.log("LOGIN ERROR FULL:", e);
-        setMsg(loginMsg, "로그인 실패: " + (e?.message || e), "bad");
+        setMsg(loginMsg, "로그인 실패: " + (e?.message || JSON.stringify(e) || e), "bad");
       } finally {
         btnLogin.disabled = false;
+      }
+    });
+
+    btnSetPassword.addEventListener("click", async () => {
+      setMsg(resetMsg, "");
+      btnSetPassword.disabled = true;
+      try {
+        const p1 = el("newPassword").value;
+        const p2 = el("newPassword2").value;
+
+        if (!p1 || p1.length < 6) throw new Error("비밀번호는 6자 이상으로 입력하세요.");
+        if (p1 !== p2) throw new Error("비밀번호 확인이 일치하지 않습니다.");
+
+        const { error } = await supabase.auth.updateUser({ password: p1 });
+        if (error) throw error;
+
+        setMsg(resetMsg, "비밀번호 저장 완료. 이제 로그인 화면으로 이동합니다.", "ok");
+
+        // URL에 붙은 토큰 파편 제거
+        history.replaceState({}, document.title, window.location.pathname);
+
+        // 로그아웃 후 다시 로그인하게 하는 방식이 가장 깔끔함
+        await supabase.auth.signOut();
+        await refreshUI();
+      } catch (e) {
+        console.log("RESET ERROR FULL:", e);
+        setMsg(resetMsg, "비밀번호 저장 실패: " + (e?.message || JSON.stringify(e) || e), "bad");
+      } finally {
+        btnSetPassword.disabled = false;
       }
     });
 
@@ -130,71 +184,35 @@
       await refreshUI();
     });
 
-    targetLoginId.addEventListener("input", () => {
-      btnApply30.disabled = targetLoginId.value.trim().length === 0;
+    targetUserId.addEventListener("input", () => {
+      btnApply30.disabled = targetUserId.value.trim().length === 0;
     });
-
-    async function fetchLicenseRow(loginId) {
-      // license_limits.user_id 가 text(로그인아이디)인 구조라서 eq(user_id, loginId)
-      const { data, error } = await supabase
-        .from("license_limits")
-        .select("user_id, daily_limit, tistory_daily_limit, cafe24_daily_limit, total_daily_limit, expires_at")
-        .eq("user_id", loginId)
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data) return null;
-      return data;
-    }
 
     btnApply30.addEventListener("click", async () => {
       setMsg(applyMsg, "");
-      setResult("");
       btnApply30.disabled = true;
-
       try {
-        const loginId = targetLoginId.value.trim();
+        const loginId = targetUserId.value.trim();
 
-        // ✅ 여기! UUID용 admin_set_limits_30 가 아니라
-        // ✅ TEXT 아이디용 admin_set_limits_30_by_login_id 호출
-        const { error } = await supabase.rpc("admin_set_limits_30_by_login_id", {
-          p_login_id: uid
-        });
+        // 여기 RPC 이름은 너가 만들 "아이디(text)로 업데이트 + 30일 연장" 버전으로 바꿔야 함
+        // 예: admin_set_limits_30_by_login
+        const { error } = await supabase.rpc("admin_set_limits_30_by_login", { p_target_login: loginId });
         if (error) throw error;
 
         setMsg(applyMsg, "적용 완료: " + loginId, "ok");
-
-        // 적용 후 값 확인(바로 보여주기)
-        const row = await fetchLicenseRow(loginId);
-        if (!row) {
-          setResult("license_limits에서 해당 아이디 행을 찾지 못했습니다: " + loginId);
-        } else {
-          setResult(
-            "적용된 현재 값\n" +
-            "user_id: " + row.user_id + "\n" +
-            "daily_limit: " + row.daily_limit + "\n" +
-            "tistory_daily_limit: " + row.tistory_daily_limit + "\n" +
-            "cafe24_daily_limit: " + row.cafe24_daily_limit + "\n" +
-            "total_daily_limit: " + row.total_daily_limit + "\n" +
-            "expires_at: " + row.expires_at
-          );
-        }
-
       } catch (e) {
-        setMsg(applyMsg, "적용 실패: " + (e?.message || e), "bad");
+        console.log("APPLY ERROR FULL:", e);
+        setMsg(applyMsg, "적용 실패: " + (e?.message || JSON.stringify(e) || e), "bad");
       } finally {
         btnApply30.disabled = false;
       }
     });
 
     supabase.auth.onAuthStateChange(() => refreshUI());
-    refreshUI();
-    // 비밀번호 재설정/매직링크로 들어온 세션을 URL에서 받아서 저장
-try {
-  const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-  // error는 무시해도 됨(일반 접속이면 보통 error/null)
-} catch (e) {}
 
+    // 페이지 로드시: URL 토큰 세션 저장 시도 → UI 갱신
+    await acceptSessionFromUrlIfAny();
+    await refreshUI();
   </script>
 </body>
 </html>
