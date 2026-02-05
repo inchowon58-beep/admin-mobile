@@ -118,6 +118,7 @@
         setMsg(loginMsg, "로그인 성공", "ok");
         await refreshUI();
       } catch (e) {
+        console.log("LOGIN ERROR FULL:", e);
         setMsg(loginMsg, "로그인 실패: " + (e?.message || e), "bad");
       } finally {
         btnLogin.disabled = false;
