@@ -8,136 +8,175 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; }
-        .hero-gradient { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .hero-gradient { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="fixed w-full z-50 glass border-b border-gray-200">
+    <nav class="fixed w-full z-50 glass border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-extrabold text-blue-600">포스팅 도우미</div>
-            <div class="space-x-8 font-medium hidden md:block">
+            <div class="text-2xl font-extrabold text-blue-600 flex items-center gap-2">
+                <span class="text-3xl">🚀</span> 포스팅 도우미
+            </div>
+            <div class="space-x-8 font-semibold hidden md:flex items-center">
+                <a href="#demo" class="hover:text-blue-600 transition">시연영상</a>
                 <a href="#features" class="hover:text-blue-600 transition">주요기능</a>
-                <a href="#smartpc" class="hover:text-blue-600 transition">스마트PC</a>
                 <a href="#pricing" class="hover:text-blue-600 transition">이용요금</a>
-                <a href="#setup" class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">셋팅 신청하기</a>
+                <a href="#setup" class="bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition shadow-md shadow-blue-200">셋팅 신청하기</a>
             </div>
         </div>
     </nav>
 
     <section class="pt-32 pb-20 px-6 hero-gradient">
-        <div class="max-w-5xl mx-auto text-center">
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-                내 컴퓨터를 꺼도 <span class="text-blue-600">365일 24시간</span><br>AI가 자동으로 포스팅합니다.
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="inline-block bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-bold mb-6">
+                누적 발행 120만건 돌파! AI 자동화의 정석
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">
+                내 컴퓨터를 꺼도 <span class="text-blue-600">365일 무중단</span><br>AI가 매일 다른 글을 발행합니다
             </h1>
-            <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                네이버 블로그, 카페, 티스토리까지! 한 번의 설정으로 한 달 내내 매일 새로운 키워드로 자동 발행되는 압도적인 효율을 경험하세요.
+            <p class="text-lg md:text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+                블로그, 카페, 티스토리를 동시에! 매일 새로운 키워드와 내용으로<br class="hidden md:block">
+                사장님의 마케팅 시간을 90% 이상 절감해 드립니다.
             </p>
+
+            <div id="demo" class="max-w-4xl mx-auto mb-16">
+                <div class="video-container border-4 border-white">
+                    <iframe 
+                        src="https://www.youtube.com/embed/g7_NUwf7eoU?autoplay=1&mute=1&loop=1&playlist=g7_NUwf7eoU&controls=1" 
+                        title="포스팅 도우미 시연 영상" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <p class="mt-4 text-slate-500 text-sm italic">▲ 실제 프로그램 작동 화면을 확인해 보세요</p>
+            </div>
+
             <div class="flex flex-col md:flex-row justify-center gap-4">
-                <a href="#pricing" class="bg-blue-600 text-white px-10 py-4 rounded-xl text-lg font-bold hover:shadow-lg transition">서비스 시작하기</a>
-                <a href="#setup" class="bg-white text-gray-800 px-10 py-4 rounded-xl text-lg font-bold border border-gray-200 hover:bg-gray-50 transition">셋팅 대행 문의</a>
+                <a href="#pricing" class="bg-blue-600 text-white px-12 py-5 rounded-2xl text-xl font-bold hover:bg-blue-700 hover:scale-105 transition-all shadow-xl shadow-blue-200">지금 바로 시작하기</a>
+                <a href="#setup" class="bg-white text-slate-800 px-12 py-5 rounded-2xl text-xl font-bold border border-slate-200 hover:bg-slate-50 transition shadow-sm">무료 셋팅 상담하기</a>
             </div>
         </div>
     </section>
 
-    <section id="features" class="py-20 px-6">
+    <section id="features" class="py-24 px-6 bg-white">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-16">작업은 AI에게 맡기고, 사장님은 상담에만 집중하세요.</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 text-blue-600 text-2xl">🤖</div>
-                    <h3 class="text-xl font-bold mb-4">AI 자동 발행 시스템</h3>
-                    <p class="text-gray-600 leading-relaxed">AI를 통해 매일 다른 키워드와 내용으로 글을 생성합니다. 유사 문서 걱정 없이 블로그, 카페, 티스토리에 동시 발행됩니다.</p>
+            <h2 class="text-3xl font-bold text-center mb-4 italic">강력한 자동화 엔진</h2>
+            <p class="text-center text-slate-500 mb-16">사장님이 주무시는 동안에도 AI는 쉬지 않고 일합니다.</p>
+            
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="group p-8 rounded-3xl border border-slate-100 bg-slate-50 hover:bg-white hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 text-2xl shadow-lg shadow-blue-100">🤖</div>
+                    <h3 class="text-xl font-bold mb-4">완전 자동 AI 발행</h3>
+                    <p class="text-slate-600 leading-relaxed">네이버 블로그, 카페, 티스토리에 AI가 직접 글을 씁니다. 한 달 내내 매일 다른 내용으로 지루함 없는 포스팅을 보장합니다.</p>
                 </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6 text-green-600 text-2xl">⏰</div>
-                    <h3 class="text-xl font-bold mb-4">지정 시간 자동 재시작</h3>
-                    <p class="text-gray-600 leading-relaxed">매일 정해진 시간에 프로그램이 자동 재시작되어 누락 없는 포스팅을 보장합니다. 한 달간 멈춤 없이 가동됩니다.</p>
+                <div class="group p-8 rounded-3xl border border-slate-100 bg-slate-50 hover:bg-white hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
+                    <div class="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mb-6 text-2xl shadow-lg shadow-emerald-100">⏰</div>
+                    <h3 class="text-xl font-bold mb-4">지정 시간 스케줄러</h3>
+                    <p class="text-slate-600 leading-relaxed">원하는 시간에 맞춰 자동으로 시작하고 종료합니다. 매일 다른 키워드 조합으로 한 달간 로직화된 작업을 수행합니다.</p>
                 </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6 text-purple-600 text-2xl">📈</div>
-                    <h3 class="text-xl font-bold mb-4">하루 30건 대량 발행</h3>
-                    <p class="text-gray-600 leading-relaxed">블로그 > 카페 > 티스토리로 이어지는 효율적인 발행 루틴으로 영역별 노출을 극대화합니다. 한 달 약 900건의 포스팅이 생성됩니다.</p>
+                <div class="group p-8 rounded-3xl border border-slate-100 bg-slate-50 hover:bg-white hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
+                    <div class="w-14 h-14 bg-indigo-500 text-white rounded-2xl flex items-center justify-center mb-6 text-2xl shadow-lg shadow-indigo-100">📊</div>
+                    <h3 class="text-xl font-bold mb-4">하루 30건 고효율</h3>
+                    <p class="text-slate-600 leading-relaxed">블로그에서 카페로, 카페에서 티스토리로! 영역별 자동시작 설정을 통해 멀티 채널 노출 효과를 극대화합니다.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="smartpc" class="py-20 px-6 bg-blue-900 text-white rounded-[3rem] mx-4 my-10">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
-            <div class="md:w-1/2">
-                <span class="bg-blue-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Optional Service</span>
-                <h2 class="text-4xl font-bold mt-4 mb-6 italic">Smart PC (가상 서버)</h2>
-                <ul class="space-y-4 text-blue-100 text-lg">
-                    <li class="flex items-center"><span class="mr-3">✔</span> 내 컴퓨터 전원을 꺼도 포스팅은 계속됩니다.</li>
-                    <li class="flex items-center"><span class="mr-3">✔</span> 한 달간 고정 IP를 할당받아 안전하게 관리됩니다.</li>
-                    <li class="flex items-center"><span class="mr-3">✔</span> 인터넷만 있다면 언제 어디서든 접속하여 모니터링 가능합니다.</li>
-                </ul>
-                <div class="mt-8">
-                    <span class="text-3xl font-bold text-white italic">월 1만원</span> <span class="text-blue-300 ml-2">의 저렴한 비용으로 개인 서버 구축</span>
-                </div>
-            </div>
-            <div class="md:w-1/2 bg-blue-800 p-8 rounded-3xl border border-blue-700 shadow-2xl">
-                <div class="flex gap-2 mb-4">
-                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
-                </div>
-                <p class="font-mono text-sm text-blue-200">
-                    [System] 스마트PC 할당 완료...<br>
-                    [System] 고정 IP: 121.XXX.XXX.XXX 활성화...<br>
-                    [System] AI 포스팅 엔진 정상 작동 중...<br>
-                    [System] 24/7 무중단 운영 상태입니다.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section id="pricing" class="py-20 px-6">
-        <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-12">합리적인 비용으로 강력한 효과를</h2>
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-2 border-blue-600">
-                <div class="p-10">
-                    <h3 class="text-2xl font-bold mb-2">프리미엄 한 달 플랜</h3>
-                    <div class="text-5xl font-extrabold my-6">300,000<span class="text-xl text-gray-500 font-normal">원 / 월</span></div>
-                    <ul class="text-left space-y-4 mb-10 text-gray-600">
-                        <li class="flex items-center italic font-semibold text-blue-600"><span class="mr-2">★</span> 하루 30건, 한 달 900건 자동 발행</li>
-                        <li class="flex items-center"><span class="mr-2 text-blue-600">✔</span> 블로그/카페/티스토리 통합 플랫폼</li>
-                        <li class="flex items-center"><span class="mr-2 text-blue-600">✔</span> 매일 다른 키워드 및 사진 자동 매칭</li>
-                        <li class="flex items-center"><span class="mr-2 text-blue-600">✔</span> 스마트PC 옵션 추가 가능 (+1만원)</li>
+    <section class="py-20 px-6">
+        <div class="max-w-6xl mx-auto bg-slate-900 rounded-[3rem] p-8 md:p-16 text-white overflow-hidden relative">
+            <div class="relative z-10 flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h2 class="text-4xl font-black mb-6 italic leading-tight text-blue-400">Smart PC<br><span class="text-white text-2xl font-bold not-italic">(가상 서버 서비스)</span></h2>
+                    <ul class="space-y-5 text-slate-300 text-lg">
+                        <li class="flex items-start"><span class="text-blue-500 mr-3">✔</span> <strong>내 컴퓨터 OFF 가능:</strong> 24시간 서버에서 자동 가동</li>
+                        <li class="flex items-start"><span class="text-blue-500 mr-3">✔</span> <strong>고정 IP 할당:</strong> 안전한 계정 관리를 위한 단독 IP 사용</li>
+                        <li class="flex items-start"><span class="text-blue-500 mr-3">✔</span> <strong>어디서나 접속:</strong> 스마트폰이나 노트북으로 모니터링</li>
                     </ul>
-                    <a href="#" class="block w-full bg-blue-600 text-white py-4 rounded-xl text-xl font-bold hover:bg-blue-700 transition">결제 및 이용 문의</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="setup" class="py-20 px-6 bg-gray-100">
-        <div class="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-sm border border-gray-200 flex flex-col md:flex-row items-center gap-10">
-            <div class="md:w-1/2">
-                <h2 class="text-3xl font-bold mb-4 italic">셋팅 대행 서비스 🚀</h2>
-                <p class="text-gray-600 leading-relaxed mb-6 italic">
-                    프로그램 설정이 막막하신가요? 걱정 마세요. <br>
-                    업체명, 키워드, 사진만 주시면 <strong>푸르메정원, 오케이독</strong>처럼 전문적인 포스팅이 되도록 기초 셋팅을 완벽하게 대행해 드립니다.
-                </p>
-                <div class="text-sm text-blue-600 font-bold">기본 정보만 전달 시 즉시 실행 가능</div>
-            </div>
-            <div class="md:w-1/2 w-full">
-                <div class="bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-300">
-                    <p class="text-center text-gray-500 font-medium">셋팅 신청 프로세스</p>
-                    <div class="mt-4 space-y-2">
-                        <div class="bg-white p-3 rounded-lg shadow-sm text-sm">1. 업체 정보 및 사진 전달</div>
-                        <div class="bg-white p-3 rounded-lg shadow-sm text-sm">2. 키워드 및 노출 영역 협의</div>
-                        <div class="bg-white p-3 rounded-lg shadow-sm text-sm text-blue-600 font-bold">3. 셋팅 완료 및 자동 발행 시작!</div>
+                    <div class="mt-10 p-4 bg-slate-800 rounded-2xl inline-block border border-slate-700">
+                        <span class="text-slate-400">임대 비용:</span> <span class="text-2xl font-bold text-blue-400 ml-2">월 1만원</span>
                     </div>
                 </div>
+                <div class="md:w-1/2 bg-black/50 p-6 rounded-2xl border border-slate-700 font-mono text-sm shadow-2xl">
+                    <div class="flex gap-1.5 mb-4">
+                        <div class="w-3 h-3 bg-rose-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-amber-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    </div>
+                    <p class="text-emerald-400 animate-pulse">> 시스템 가동 중...</p>
+                    <p class="text-slate-400">> 지역: 서울/경기/전국 타겟팅 활성화</p>
+                    <p class="text-slate-400">> 키워드: 사모예드 분양, 테라스 조경...</p>
+                    <p class="text-blue-400">> 포스팅 발행 성공 (Blog -> Cafe)</p>
+                    <p class="text-slate-500 mt-4">// 스마트PC 가상서버 구동 화면 예시</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <footer class="py-10 text-center text-gray-400 text-sm border-t border-gray-200">
-        <p>© 2026 포스팅 도우미. All Rights Reserved.</p>
+    <section id="pricing" class="py-24 px-6 bg-slate-50">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">합리적인 투자, 확실한 효과</h2>
+                <p class="text-slate-500">직원 한 명 채용 비용의 10분의 1로 24시간 마케터를 고용하세요.</p>
+            </div>
+            
+            <div class="bg-white rounded-[2.5rem] shadow-2xl border-4 border-blue-600 overflow-hidden transform hover:scale-[1.02] transition-transform">
+                <div class="p-12 text-center">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-2">프리미엄 무제한 플랜</h3>
+                    <div class="flex justify-center items-baseline my-8">
+                        <span class="text-6xl font-black tracking-tighter">300,000</span>
+                        <span class="text-xl text-slate-500 ml-2">원 / 월</span>
+                    </div>
+                    <div class="space-y-4 mb-10 text-left max-w-sm mx-auto">
+                        <div class="flex items-center gap-3 text-slate-700"><span class="text-blue-600">✔</span> 매일 30건 이상 자동 발행</div>
+                        <div class="flex items-center gap-3 text-slate-700"><span class="text-blue-600">✔</span> 블로그/카페/티스토리 3개 플랫폼</div>
+                        <div class="flex items-center gap-3 text-slate-700"><span class="text-blue-600">✔</span> AI 텍스트 생성 및 이미지 매칭</div>
+                        <div class="flex items-center gap-3 text-slate-700"><span class="text-blue-600">✔</span> 스마트PC 서버 옵션 선택 가능</div>
+                    </div>
+                    <button class="w-full bg-blue-600 text-white py-5 rounded-2xl text-2xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-colors">이용 신청 및 문의하기</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="setup" class="py-20 px-6">
+        <div class="max-w-5xl mx-auto bg-blue-50 border-2 border-dashed border-blue-200 rounded-[3rem] p-12 text-center">
+            <h2 class="text-3xl font-bold mb-6 italic text-blue-900 font-black">초보자도 걱정 없는 '셋팅 대행 서비스'</h2>
+            <p class="text-lg text-blue-700 mb-10 leading-relaxed">
+                설정이 복잡해 보이시나요? 기본 정보만 주시면 저희가 직접 다 해드립니다.<br>
+                <strong>업체명, 키워드, 사진</strong>만 준비해 주세요. 바로 발행 가능하게 셋팅해 드립니다.
+            </p>
+            <div class="grid md:grid-cols-3 gap-6 text-sm font-bold">
+                <div class="bg-white p-5 rounded-2xl shadow-sm">STEP 1. 기본 정보 전달</div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm">STEP 2. 노출 타겟팅 협의</div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm text-blue-600 border border-blue-200">STEP 3. 자동 발행 시작!</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-slate-200 text-center text-slate-400">
+        <div class="max-w-7xl mx-auto px-6 italic font-medium">
+            <p>© 2026 포스팅 도우미 | AI 연동 대량 발행 전문 솔루션</p>
+            <p class="mt-2 text-xs">본 프로그램은 마케팅 효율 극대화를 위해 설계되었습니다.</p>
+        </div>
     </footer>
 
 </body>
