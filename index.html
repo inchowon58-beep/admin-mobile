@@ -157,7 +157,7 @@
         // ✅ 여기! UUID용 admin_set_limits_30 가 아니라
         // ✅ TEXT 아이디용 admin_set_limits_30_by_login_id 호출
         const { error } = await supabase.rpc("admin_set_limits_30_by_login_id", {
-          p_login_id: loginId
+          p_login_id: uid
         });
         if (error) throw error;
 
