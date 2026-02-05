@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>관리자 발행량 설정</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background: #f6f7f9; }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 16px; }
+    .card { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 12px; }
+    input, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d7dbe0; font-size: 16px; box-sizing: border-box; }
+    button { border: 0; background: #2f6fff; color: #fff; cursor: pointer; }
+    button:disabled { background: #9fb9ff; cursor: not-allowed; }
+    .row { display: grid; gap: 10px; }
+    .muted { color: #6b7280; font-size: 13px; line-height: 1.4; }
+    .ok { color: #0f7b3a; }
+    .bad { color: #b42318; }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 10px; }
+    .tiny { font-size: 12px; color:#6b7280; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <div>모바일 관리자</div>
+          <div class="tiny" id="sessionInfo">로그인 안됨</div>
+        </div>
+        <button id="btnLogout" style="width:auto; padding:10px 12px; display:none;">로그아웃</button>
+      </div>
+      <div class="row" id="loginBox">
+        <input id="email" type="email" placeholder="관리자 이메일" />
+        <input id="password" type="password" placeholder="비밀번호" />
+        <button id="btnLogin">로그인</button>
+        <div class="muted">
+          관리자 계정으로 Supabase Auth에 가입되어 있어야 합니다.
+        </div>
+        <div class="muted" id="loginMsg"></div>
+      </div>
+    </div>
+
+    <div class="card" id="adminBox" style="display:none;">
+      <div class="row">
+        <input id="targetUserId" placeholder="대상 user_id 입력" />
+        <button id="btnApply30" disabled>발행량 전부 30 적용</button>
+        <div class="muted">
+          적용 내용: daily_limit, tistory_daily_limit, cafe24_daily_limit, total_daily_limit = 30
+        </div>
+        <div class="muted" id="applyMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "네_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "네_SUPABASE_ANON_KEY";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const el = (id) => document.getElementById(id);
+
+    const sessionInfo = el("sessionInfo");
+    const loginBox = el("loginBox");
+    const adminBox = el("adminBox");
+    const btnLogout = el("btnLogout");
+
+    const btnLogin = el("btnLogin");
+    const loginMsg = el("loginMsg");
+
+    const targetUserId = el("targetUserId");
+    const btnApply30 = el("btnApply30");
+    const applyMsg = el("applyMsg");
+
+    function setMsg(node, text, type) {
+      node.textContent = text || "";
+      node.className = "muted " + (type || "");
+    }
+
+    async function refreshUI() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        sessionInfo.textContent = "로그인됨: " + session.user.email;
+        loginBox.style.display = "none";
+        adminBox.style.display = "block";
+        btnLogout.style.display = "inline-block";
+      } else {
+        sessionInfo.textContent = "로그인 안됨";
+        loginBox.style.display = "grid";
+        adminBox.style.display = "none";
+        btnLogout.style.display = "none";
+      }
+    }
+
+    btnLogin.addEventListener("click", async () => {
+      setMsg(loginMsg, "");
+      btnLogin.disabled = true;
+      try {
+        const email = el("email").value.trim();
+        const password = el("password").value;
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        setMsg(loginMsg, "로그인 성공", "ok");
+        await refreshUI();
+      } catch (e) {
+        setMsg(loginMsg, "로그인 실패: " + (e?.message || e), "bad");
+      } finally {
+        btnLogin.disabled = false;
+      }
+    });
+
+    btnLogout.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      await refreshUI();
+    });
+
+    targetUserId.addEventListener("input", () => {
+      btnApply30.disabled = targetUserId.value.trim().length === 0;
+    });
+
+    btnApply30.addEventListener("click", async () => {
+      setMsg(applyMsg, "");
+      btnApply30.disabled = true;
+      try {
+        const uid = targetUserId.value.trim();
+        const { error } = await supabase.rpc("admin_set_limits_30", { p_target_user_id: uid });
+        if (error) throw error;
+        setMsg(applyMsg, "적용 완료: " + uid, "ok");
+      } catch (e) {
+        setMsg(applyMsg, "적용 실패: " + (e?.message || e), "bad");
+      } finally {
+        btnApply30.disabled = false;
+      }
+    });
+
+    supabase.auth.onAuthStateChange(() => refreshUI());
+    refreshUI();
+  </script>
+</body>
+</html>
