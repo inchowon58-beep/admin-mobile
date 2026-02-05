@@ -188,6 +188,12 @@
 
     supabase.auth.onAuthStateChange(() => refreshUI());
     refreshUI();
+    // 비밀번호 재설정/매직링크로 들어온 세션을 URL에서 받아서 저장
+try {
+  const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+  // error는 무시해도 됨(일반 접속이면 보통 error/null)
+} catch (e) {}
+
   </script>
 </body>
 </html>
